@@ -1,0 +1,65 @@
+{
+  "n_test_windows": 672,
+  "horizons": {
+    "7-Day": {
+      "lstm_v2": {
+        "mae": 0.6576554815963218,
+        "rmse": 0.7662857267817613,
+        "mape_pct": 4.196686793028478,
+        "directional_accuracy_pct": 46.78624813153961
+      },
+      "persistence": {
+        "mae": 0.3860119047619047,
+        "rmse": 0.4762536714019216,
+        "mape_pct": 2.474761546312975,
+        "directional_accuracy_pct": null
+      },
+      "beats_persistence": false
+    },
+    "14-Day": {
+      "lstm_v2": {
+        "mae": 0.5622701170374058,
+        "rmse": 0.6945819773133102,
+        "mape_pct": 3.571948789206119,
+        "directional_accuracy_pct": 48.05389221556886
+      },
+      "persistence": {
+        "mae": 0.5277529761904761,
+        "rmse": 0.6573604550451319,
+        "mape_pct": 3.372255602030193,
+        "directional_accuracy_pct": null
+      },
+      "beats_persistence": false
+    },
+    "30-Day": {
+      "lstm_v2": {
+        "mae": 0.9099577264346421,
+        "rmse": 1.1449043099932212,
+        "mape_pct": 5.7178246662846,
+        "directional_accuracy_pct": 51.569506726457405
+      },
+      "persistence": {
+        "mae": 0.7164434523809524,
+        "rmse": 0.8928186539323221,
+        "mape_pct": 4.543084620427253,
+        "directional_accuracy_pct": null
+      },
+      "beats_persistence": false
+    },
+    "60-Day": {
+      "lstm_v2": {
+        "mae": 1.2327423944270637,
+        "rmse": 1.5155415600125426,
+        "mape_pct": 7.689952032048973,
+        "directional_accuracy_pct": 46.865671641791046
+      },
+      "persistence": {
+        "mae": 1.1036904761904762,
+        "rmse": 1.2887794151647445,
+        "mape_pct": 7.018621373136182,
+        "directional_accuracy_pct": null
+      },
+      "beats_persistence": false
+    }
+  }
+}

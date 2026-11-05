@@ -1,0 +1,161 @@
+{
+  "n_test_windows": 672,
+  "horizons": {
+    "7-Day": {
+      "persistence": {
+        "mae": 0.3860119047619047,
+        "rmse": 0.4762536714019216,
+        "mape_pct": 2.474761546312975,
+        "directional_accuracy_pct": null
+      },
+      "persistence+drift": {
+        "mae": 0.38992044413919413,
+        "rmse": 0.4832013525249329,
+        "mape_pct": 2.500906405403941,
+        "directional_accuracy_pct": 47.53363228699551
+      },
+      "holt": {
+        "mae": 0.3872744016846048,
+        "rmse": 0.4796401724392659,
+        "mape_pct": 2.4822227424845904,
+        "directional_accuracy_pct": 47.384155455904335
+      },
+      "lstm (old)": {
+        "mae": 4.567304704628878,
+        "rmse": 4.747026263061859,
+        "mape_pct": 29.850118384793895,
+        "directional_accuracy_pct": 53.21375186846039
+      },
+      "lstm_v2": {
+        "mae": 0.6576554815963218,
+        "rmse": 0.7662857267817613,
+        "mape_pct": 4.196686793028478,
+        "directional_accuracy_pct": 46.78624813153961
+      },
+      "timesfm": {
+        "mae": 0.3910126173496246,
+        "rmse": 0.4815617845561998,
+        "mape_pct": 2.5057941771862358,
+        "directional_accuracy_pct": 46.038863976083704,
+        "p10_p90_coverage_pct": 80.80357142857143
+      }
+    },
+    "14-Day": {
+      "persistence": {
+        "mae": 0.5277529761904761,
+        "rmse": 0.6573604550451319,
+        "mape_pct": 3.372255602030193,
+        "directional_accuracy_pct": null
+      },
+      "persistence+drift": {
+        "mae": 0.5440006868131868,
+        "rmse": 0.6785927373343033,
+        "mape_pct": 3.4773502591051213,
+        "directional_accuracy_pct": 43.862275449101794
+      },
+      "holt": {
+        "mae": 0.5321480857535617,
+        "rmse": 0.6640852473428943,
+        "mape_pct": 3.397987293916961,
+        "directional_accuracy_pct": 44.16167664670659
+      },
+      "lstm (old)": {
+        "mae": 4.472943626773699,
+        "rmse": 4.647203736234104,
+        "mape_pct": 29.214164314442986,
+        "directional_accuracy_pct": 51.94610778443114
+      },
+      "lstm_v2": {
+        "mae": 0.5622701170374058,
+        "rmse": 0.6945819773133102,
+        "mape_pct": 3.571948789206119,
+        "directional_accuracy_pct": 48.05389221556886
+      },
+      "timesfm": {
+        "mae": 0.5296971663406916,
+        "rmse": 0.6602055501938013,
+        "mape_pct": 3.3814708273380205,
+        "directional_accuracy_pct": 51.19760479041916,
+        "p10_p90_coverage_pct": 79.76190476190477
+      }
+    },
+    "30-Day": {
+      "persistence": {
+        "mae": 0.7164434523809524,
+        "rmse": 0.8928186539323221,
+        "mape_pct": 4.543084620427253,
+        "directional_accuracy_pct": null
+      },
+      "persistence+drift": {
+        "mae": 0.7831001439037153,
+        "rmse": 0.9626532198699648,
+        "mape_pct": 4.969528027944455,
+        "directional_accuracy_pct": 37.07025411061286
+      },
+      "holt": {
+        "mae": 0.7249727526794492,
+        "rmse": 0.9096488106518594,
+        "mape_pct": 4.594513882509813,
+        "directional_accuracy_pct": 41.106128550074736
+      },
+      "lstm (old)": {
+        "mae": 4.454024098508602,
+        "rmse": 4.616055220167268,
+        "mape_pct": 29.02240622345542,
+        "directional_accuracy_pct": 48.4304932735426
+      },
+      "lstm_v2": {
+        "mae": 0.9099577264346421,
+        "rmse": 1.1449043099932212,
+        "mape_pct": 5.7178246662846,
+        "directional_accuracy_pct": 51.569506726457405
+      },
+      "timesfm": {
+        "mae": 0.7000577411197481,
+        "rmse": 0.883769298505376,
+        "mape_pct": 4.432167633247193,
+        "directional_accuracy_pct": 60.53811659192825,
+        "p10_p90_coverage_pct": 83.63095238095238
+      }
+    },
+    "60-Day": {
+      "persistence": {
+        "mae": 1.1036904761904762,
+        "rmse": 1.2887794151647445,
+        "mape_pct": 7.018621373136182,
+        "directional_accuracy_pct": null
+      },
+      "persistence+drift": {
+        "mae": 1.2457211538461537,
+        "rmse": 1.467436472410923,
+        "mape_pct": 7.933527212681446,
+        "directional_accuracy_pct": 30.74626865671642
+      },
+      "holt": {
+        "mae": 1.1153448549920935,
+        "rmse": 1.310299397860863,
+        "mape_pct": 7.088650565600149,
+        "directional_accuracy_pct": 47.16417910447761
+      },
+      "lstm (old)": {
+        "mae": 4.351554402335658,
+        "rmse": 4.534423151758649,
+        "mape_pct": 28.341179069675942,
+        "directional_accuracy_pct": 53.13432835820896
+      },
+      "lstm_v2": {
+        "mae": 1.2327423944270637,
+        "rmse": 1.5155415600125426,
+        "mape_pct": 7.689952032048973,
+        "directional_accuracy_pct": 46.865671641791046
+      },
+      "timesfm": {
+        "mae": 1.0529145046642847,
+        "rmse": 1.2370881542957768,
+        "mape_pct": 6.686768889808496,
+        "directional_accuracy_pct": 67.61194029850746,
+        "p10_p90_coverage_pct": 84.82142857142857
+      }
+    }
+  }
+}
