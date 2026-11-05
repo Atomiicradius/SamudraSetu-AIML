@@ -1,0 +1,26 @@
+{
+  "7-Day": {
+    "mae_usd_per_mt": 3.740136229881873,
+    "rmse_usd_per_mt": 4.09092543933809,
+    "smape_pct": 21.525409108335666,
+    "directional_accuracy_pct": 47.56201881950385
+  },
+  "14-Day": {
+    "mae_usd_per_mt": 3.6671401205470415,
+    "rmse_usd_per_mt": 4.010262904676037,
+    "smape_pct": 21.158497177352,
+    "directional_accuracy_pct": 48.33190761334474
+  },
+  "30-Day": {
+    "mae_usd_per_mt": 3.717727788941473,
+    "rmse_usd_per_mt": 4.016218335903948,
+    "smape_pct": 21.44880365453585,
+    "directional_accuracy_pct": 52.01026518391788
+  },
+  "60-Day": {
+    "mae_usd_per_mt": 3.7133101322793554,
+    "rmse_usd_per_mt": 3.982376818380829,
+    "smape_pct": 21.457870666005046,
+    "directional_accuracy_pct": 47.13430282292558
+  }
+}

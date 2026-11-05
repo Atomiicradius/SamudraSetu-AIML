@@ -1,0 +1,8 @@
+Model Architecture,Target / Task,Horizon,MAE,RMSE,sMAPE / R^2,Directional Accuracy
+XGBoost Regressor,Port Congestion Index (0-100),1-Day Ahead,1.7298,3.0043,R^2 = 0.6413,69.95%
+XGBoost Regressor,Vessel Wait Hours,1-Day Ahead,1.0848,1.8120,R^2 = 0.2904,68.85%
+XGBoost Regressor,Freight Rate (USD/MT),1-Day Ahead,0.6657,0.8553,R^2 = -0.9402,22.40%
+PyTorch 2-Layer LSTM,Freight Rate (USD/MT),7-Day,$3.74/MT,$4.09/MT,sMAPE = 21.53%,47.56%
+PyTorch 2-Layer LSTM,Freight Rate (USD/MT),14-Day,$3.67/MT,$4.01/MT,sMAPE = 21.16%,48.33%
+PyTorch 2-Layer LSTM,Freight Rate (USD/MT),30-Day,$3.72/MT,$4.02/MT,sMAPE = 21.45%,52.01%
+PyTorch 2-Layer LSTM,Freight Rate (USD/MT),60-Day,$3.71/MT,$3.98/MT,sMAPE = 21.46%,47.13%

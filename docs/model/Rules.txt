@@ -1,0 +1,445 @@
+Here is the updated system documentation, fully incorporating the complete **Architecture** specification into the implementation guide.
+
+---
+
+# Aegis System Documentation & Implementation Guide
+
+## Executive Summary & System Architectural Boundaries
+
+**Aegis** is an autonomous multi-agent orbital collision de-confliction system built using a FastAPI + WebSocket backend and a React/Vite + `react-globe.gl` frontend. It automates satellite collision avoidance negotiations across operators using deterministic safety algorithms alongside LLM-driven operational narration.
+
+### Architectural Invariants
+
+1. **Deterministic Safety Calculations:** Any number affecting a safety decision ($\Delta v$, miss distance, `yield_score`) MUST originate strictly from deterministic Python routines—never directly from LLM text generation. The LLM serves solely for structured tool calling and operational narration.
+
+
+2. **Decoupled Architecture:** `agents/` modules do not interact directly with WebSocket connections. The Orchestrator acts as the sole broadcasting hub and manager of session state.
+
+
+3. **Data Routing:** The frontend never connects directly to third-party APIs. All telemetry and tracking feeds route through the backend, which operates offline-first using local cached data as its primary fallback.
+
+
+4. **Single Globe Instance:** The UI uses a single configurable 3D Globe component across all visual modes (Monitor, Conjunction Highlight, and Trajectory Simulation).
+
+
+5. **Capped Negotiation & Resilience:** Negotiation rounds are capped (default: 3) with a deterministic tie-break fallback. The Validation Agent can approve "no action". On WebSocket reconnect, clients always request full state snapshots. All timestamps are strictly UTC.
+
+
+
+---
+
+## Technical Stack & Configuration
+
+### Architecture Stack Breakdown
+
+| Layer | Tool | Purpose |
+| --- | --- | --- |
+| **Backend framework** | FastAPI (Python 3.11+) | REST + WebSocket server, async-native
+
+ |
+| **Orbital propagation** | `sgp4` (Python) | Real SGP4 propagation from TLE data
+
+ |
+| **Data validation** | Pydantic | Schema enforcement for all agent messages and API payloads
+
+ |
+| **LLM** | Anthropic API (Claude), via `anthropic` SDK | Negotiation narration + structured tool-calling
+
+ |
+| **Negotiation state machine** | Hand-rolled enum/dispatch | Deterministic state flow without unforced framework risk
+
+ |
+| **Local persistence** | SQLite / plain JSON cache | Conjunction history, cached TLE/NOAA snapshots
+
+ |
+| **Frontend framework** | React + Vite | Fast dev server, client-side rendering
+
+ |
+| **Globe visualization** | `react-globe.gl` | 3D globe, points/arcs/rings layers for satellites, orbits, alerts
+
+ |
+| **Client-side propagation** | `satellite.js` (optional) | Smooth client-side orbit animation without full backend round-trips
+
+ |
+| **Styling** | Tailwind CSS | Fast theming, dark space aesthetic
+
+ |
+| **Frontend state** | Zustand | Lightweight store for live WebSocket state
+
+ |
+| **Language** | TypeScript (frontend), Python (backend) | Type-safe client, robust backend logic
+
+ |
+
+### System Boundaries & Directory Layout
+
+```
+/backend
+  /app
+    main.py                 → FastAPI app entrypoint, WebSocket route registration[cite: 12]
+    /agents
+      monitor_agent.py       → Conjunction Monitor Agent (deterministic, no LLM)[cite: 12]
+      operator_agent.py      → Satellite Operator Agent (LLM narration + tool-calling)[cite: 12]
+      validation_agent.py    → Cascade/Safety Validation Agent (deterministic)[cite: 12]
+      cost_functions.py      → yield_score, delta_v calculations — pure functions[cite: 12]
+    /data
+      celestrak.py           → CelesTrak TLE fetch + cache[cite: 12]
+      noaa.py                → NOAA Kp-index fetch + cache (Phase 2)[cite: 12]
+      scenario.py             → Scripted/seeded demo conjunction generator[cite: 12]
+      cache/                  → Cached TLE/NOAA snapshots[cite: 12]
+    /schemas
+      conjunction.py          → ConjunctionAlert Pydantic model[cite: 12]
+      negotiation.py          → NegotiationMessage, Resolution Pydantic models[cite: 12]
+    /orchestrator
+      orchestrator.py         → Owns negotiation session state, dispatches between agents[cite: 12]
+      websocket_manager.py    → Connection management, sequence numbering, reconnects[cite: 12]
+    /storage
+      db.py                    → SQLite connection + queries (history log)[cite: 12]
+  requirements.txt
+
+/frontend
+  /src
+    /components
+      /globe                 → Configurable Globe (live/conjunction/trajectory modes)[cite: 12]
+      /negotiation            → Negotiation console (two-column transcript, round tracker)[cite: 12]
+      /conjunction             → Conjunction details cards[cite: 12]
+      /history                 → History table[cite: 12]
+      /shared                  → Buttons, cards, badges, nav[cite: 12]
+    /pages
+      Landing.tsx, Monitor.tsx, Negotiate.tsx, Trajectory.tsx, History.tsx, About.tsx[cite: 12]
+    /store
+      useNegotiationStore.ts   → Zustand store for live negotiation/globe state[cite: 12]
+    /lib
+      websocket.ts              → WebSocket client hook, reconnect + sequence handling[cite: 12]
+      propagate.ts               → satellite.js wrapper for client-side propagation[cite: 12]
+    App.tsx
+    main.tsx
+  package.json
+
+```
+
+### Environment Variables
+
+```bash
+ANTHROPIC_API_KEY=your_api_key_here
+CELESTRAK_BASE_URL=https://celestrak.org/NORAD/elements/gp.php
+VITE_WS_URL=ws://localhost:8000/ws/monitor
+
+```
+
+---
+
+## End-to-End Data Flow Execution
+
+```
+1. celestrak.py fetches/loads cached TLEs[cite: 12]
+2. monitor_agent.py propagates via sgp4, detects conjunctions below threshold[cite: 12]
+3. monitor_agent.py → emits ConjunctionAlert → orchestrator.py[cite: 12]
+4. orchestrator.py → creates NegotiationSession, invokes two operator_agent.py instances[cite: 12]
+5. Each operator_agent.py → computes yield_score via cost_functions.py (deterministic)[cite: 12]
+                          → calls Anthropic API with yield_score as tool input → gets justification_text[cite: 12]
+6. operator_agent.py → emits NegotiationMessage → orchestrator.py → broadcast over WebSocket[cite: 12]
+7. orchestrator.py compares yield_scores after each round; on convergence or round cap →
+   validation_agent.py re-runs sgp4 lookahead on proposed maneuver[cite: 12]
+8. validation_agent.py → approves | rejects_secondary_risk | approved_no_action[cite: 12]
+   → if rejected: loop back to step 5 with added constraint[cite: 12]
+   → if approved: orchestrator.py emits Resolution → broadcast → frontend updates globe[cite: 12]
+9. storage/db.py logs the full session for the History page[cite: 12]
+
+```
+
+---
+
+## Database Schema
+
+### `conjunctions`
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | TEXT (PK) | UUID
+
+ |
+| `primary_id` | TEXT | NORAD catalog number
+
+ |
+| `secondary_id` | TEXT | NORAD catalog number
+
+ |
+| `tca_utc` | TEXT | ISO timestamp, time of closest approach
+
+ |
+| `miss_distance_km` | REAL | Miss distance in kilometers
+
+ |
+| `relative_velocity_kmps` | REAL | Relative velocity in km/s
+
+ |
+| `status` | TEXT | `alerted | negotiating | resolved | escalated | stood_down`<br> |
+| `created_at` | TEXT | ISO timestamp
+
+ |
+
+### `negotiation_messages`
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | TEXT (PK) | UUID
+
+ |
+| `conjunction_id` | TEXT (FK → `conjunctions.id`) | Foreign key
+
+ |
+| `agent_id` | TEXT | `operator_A | operator_B | validation`<br> |
+| `round` | INTEGER | Negotiation round number
+
+ |
+| `yield_score` | REAL | Nullable for validation-agent rows
+
+ |
+| `justification_text` | TEXT | Narration generated by agent
+
+ |
+| `proposed_action` | TEXT | `maneuver | stand_down | reject | approve`<br> |
+| `created_at` | TEXT | ISO timestamp
+
+ |
+
+### `resolutions`
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | TEXT (PK) | UUID
+
+ |
+| `conjunction_id` | TEXT (FK → `conjunctions.id`) | Foreign key
+
+ |
+| `maneuvering_agent` | TEXT | Identifier of satellite taking action
+
+ |
+| `maneuver_type` | TEXT | Specific maneuver type
+
+ |
+| `delta_v_mps` | REAL | Maneuver cost ($\Delta v$ in m/s)
+
+ |
+| `execution_time_utc` | TEXT | Scheduled execution ISO timestamp
+
+ |
+| `expected_min_distance_km` | REAL | Calculated post-maneuver miss distance
+
+ |
+| `residual_risk` | REAL | Remaining calculated risk ratio
+
+ |
+| `rationale_text` | TEXT | Operational rationale summary
+
+ |
+| `status` | TEXT | `approved | approved_no_action | no_safe_maneuver_found`<br> |
+
+---
+
+## Design System & UI Specifications
+
+Aegis follows a space-mission-control aesthetic with dark navy surfaces and high-contrast status accents. **Full colored-background cards are strictly prohibited**; color must be applied via badges, status indicators, and subtle accent borders.
+
+### CSS Design Tokens (`globals.css`)
+
+```css
+:root {
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-background: #0a0e17;
+  --color-surface: #10151f;
+  --color-surface-secondary: #161c2a;
+  --color-surface-tertiary: #1c2333;
+  --color-surface-muted: #0d1219;
+
+  --color-border: #232a3b;
+  --color-border-light: #2e3750;
+  --color-border-muted: #171d2b;
+
+  --color-text-primary: #f2f4f8;
+  --color-text-secondary: #9ca3b8;
+  --color-text-muted: #5c6478;
+
+  --color-accent: #3b82f6;
+  --color-accent-dark: #2563eb;
+  --color-accent-light: #60a5fa;
+  --color-accent-muted: #1e3a5f;
+
+  --color-danger: #ef4444;
+  --color-danger-light: #fca5a5;
+  --color-danger-muted: #3a1a1a;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fcd34d;
+  --color-warning-muted: #3a2e0f;
+
+  --color-success: #22c55e;
+  --color-success-light: #86efac;
+  --color-success-muted: #143120;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+```
+
+---
+
+## Core Component Patterns
+
+### Deterministic Cost Calculation & LLM Narration (`backend`)
+
+```python
+# backend/app/agents/cost_functions.py
+CONJUNCTION_THRESHOLD_KM = 5.0
+HYSTERESIS_CLEAR_KM = 4.0
+MAX_NEGOTIATION_ROUNDS = 3
+VALIDATION_LOOKAHEAD_HOURS = 6
+
+def compute_yield_score(mvi: float, fuel_margin_pct: float, maneuver_cost_delta_v: float) -> float:
+    """Computes deterministic yield score. Higher score yields to lower score."""
+    return (mvi * 0.5) + (fuel_margin_pct * 0.3) - (maneuver_cost_delta_v * 0.2)
+
+```
+
+```python
+# backend/app/agents/operator_agent.py
+import anthropic
+from app.agents.cost_functions import compute_yield_score
+
+client = anthropic.Anthropic()
+
+async def get_agent_justification(agent_state: dict, delta_v: float) -> str:
+    # Compute score deterministically BEFORE calling LLM
+    yield_score = compute_yield_score(
+        agent_state['mvi'], 
+        agent_state['fuel_margin_pct'], 
+        delta_v
+    )
+    
+    try:
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=300,
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"You are the negotiation agent for {agent_state['operator']}. "
+                    f"Your computed yield_score is {yield_score:.2f} "
+                    f"(MVI: {agent_state['mvi']}, Fuel: {agent_state['fuel_margin_pct']}%). "
+                    "Write a concise 1-2 sentence operational justification for this position."
+                ),
+            }],
+        )
+        return response.content[0].text
+    except Exception:
+        # Fallback path ensures negotiation loop stability if LLM fails
+        return f"Yield score calculated at {yield_score:.2f} based on current operational parameters."
+
+```
+
+---
+
+## Multi-Developer Workstream Plan
+
+Execution is partitioned across 4 developers based on functional domain limits to minimize merge conflicts and eliminate critical-path dependencies.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                                PHASE 0                                 │
+│             Shared Schemas, Contracts, & Mock Fixtures                 │
+└───────────────────┬────────────────────────────────┬───────────────────┘
+                    │                                │
+  ┌─────────────────┴───────────────┐──┐─────────────┴─────────────────┐
+  │ Workstream A: Dev A             │  │ Workstream B: Dev B           │
+  │ Orbital Physics & SGP4          │  │ FastAPI Orchestrator & WS     │
+  └─────────────────┬───────────────┘  └─────────────┬─────────────────┘
+                    │                                │
+  ┌─────────────────┴───────────────┐──┐─────────────┴─────────────────┐
+  │ Workstream C: Dev C             │  │ Workstream D: Dev D           │
+  │ Cost Functions & Narration      │  │ React UI & Globe Visualization│
+  └─────────────────┬───────────────┘  └─────────────┬─────────────────┘
+                    │                                │
+┌───────────────────┴────────────────────────────────┴───────────────────┐
+│                              CHECKPOINT 1                              │
+│                Integrated Live Conjunction Pipeline                   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+┌───────────────────────────────────┴────────────────────────────────────┐
+│                              CHECKPOINT 2                              │
+│              End-to-End Negotiation & Validation Loop                  │
+└────────────────────────────────────────────────────────────────────────┘
+
+```
+
+### Workstream Allocations
+
+* **Dev A (Orbital Physics):** TLE caching (`data/celestrak.py`), SGP4 orbital propagation, pairwise conjunction scanning (`agents/monitor_agent.py`), trajectory vector generation, SQLite history persistence (`storage/db.py`).
+
+
+* **Dev B (System Spine & Orchestrator):** FastAPI application skeleton (`main.py`), WebSocket connection lifecycle (`orchestrator/websocket_manager.py`), event sequence tracking, session state machine execution (`orchestrator/orchestrator.py`).
+
+
+* **Dev C (Agent Intelligence):** Deterministic `yield_score` algorithms (`cost_functions.py`), Anthropic LLM narration integration (`agents/operator_agent.py`), safety validation lookahead checking (`agents/validation_agent.py`).
+
+
+* **Dev D (Frontend Experience):** Application shell, configurable `react-globe.gl` rendering, real-time negotiation console (`components/negotiation`), Zustand state store (`store/useNegotiationStore.ts`), client WebSocket hook (`lib/websocket.ts`).
+
+
+
+---
+
+## Team Progress Tracking Ledger
+
+### Phase 0 Execution Status
+
+* [ ] Backend & Frontend Repository Skeleton Setup
+
+
+* [ ] Schema Contract Specifications (`conjunction.py`, `negotiation.py`)
+
+
+* [ ] WebSocket Protocol Definition & Sequence Envelope
+
+
+* [ ] Shared Constants & Pure Cost Functions (`cost_functions.py`)
+
+
+* [ ] Static Mock Data Fixture Generation & Local TLE Cache
+
+
+
+### Implementation Checkpoints Verification Matrix
+
+#### Checkpoint 1: Conjunction Detection Pipeline
+
+* [ ] Cached TLE ingestion feeds SGP4 propagation pipeline correctly without network dependencies.
+
+
+* [ ] Orchestrator emits valid WebSocket payload containing detected conjunction alerts.
+
+
+* [ ] Frontend Globe correctly places dynamic hazard indicators driven by WebSocket notifications.
+
+
+* [ ] Client disconnect/reconnect sequence correctly triggers full state snapshot resynchronization.
+
+
+
+#### Checkpoint 2: Autonomous Negotiation Loop
+
+* [ ] Triggering negotiation executes multi-round proposal/counter-proposal cycles.
+
+
+* [ ] All UI numerical values trace directly back to deterministic backend computations.
+
+
+* [ ] Validation agent detects downstream hazards and enforces re-negotiation when required.
+
+
+* [ ] Final plan emission updates 3D Globe orbital path preview and commits log entries to SQLite storage.

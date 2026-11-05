@@ -1,0 +1,57 @@
+{
+  "num_cols": [
+    "usd_inr_exchange_rate",
+    "brent_crude_usd_per_bbl",
+    "coal_price_usd_per_mt",
+    "freight_aus_to_paradip_capesize_usd_per_mt",
+    "freight_aus_to_paradip_panamax_usd_per_mt",
+    "freight_usa_to_vizag_capesize_usd_per_mt",
+    "freight_moz_to_dhamra_supramax_usd_per_mt",
+    "freight_australia_paradip_supramax_usd_per_mt",
+    "freight_indonesia_visakhapatnam_panamax_usd_per_mt",
+    "freight_mozambique_dhamra_handysize_usd_per_mt"
+  ],
+  "target_col": "freight_aus_to_paradip_capesize_usd_per_mt",
+  "lookback_days": 30,
+  "scaler_mean": [
+    62.19246083880748,
+    78.06006737409467,
+    107.9394711133569,
+    27.889179720397507,
+    31.202423783055412,
+    54.56900791645612,
+    18.915440458143845,
+    21.898253326595924,
+    14.498763685362974,
+    26.47828532929088
+  ],
+  "scaler_scale": [
+    15.53904511058579,
+    21.74555728904625,
+    50.24955056893416,
+    10.855216390030531,
+    11.681491586407176,
+    13.452590707439759,
+    6.205838678162454,
+    0.6050858488288156,
+    0.5844237973522868,
+    0.4763771725066819
+  ],
+  "X_shape": [
+    5847,
+    30,
+    10
+  ],
+  "Y_7_shape": [
+    5847
+  ],
+  "Y_14_shape": [
+    5847
+  ],
+  "Y_30_shape": [
+    5847
+  ],
+  "Y_60_shape": [
+    5847
+  ]
+}

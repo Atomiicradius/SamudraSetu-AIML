@@ -1,0 +1,23 @@
+{
+  "congestion_index_0_100": {
+    "target_name": "Port Congestion Index (0-100)",
+    "mae": 1.7297674577132505,
+    "rmse": 3.004305357278763,
+    "r2": 0.6412937303125583,
+    "directional_accuracy_pct": 69.94535519125684
+  },
+  "sim_wait_hours": {
+    "target_name": "Vessel Wait Hours",
+    "mae": 1.084798426420793,
+    "rmse": 1.8119604765033328,
+    "r2": 0.29043132796313886,
+    "directional_accuracy_pct": 68.85245901639344
+  },
+  "freight_australia_paradip_supramax_usd_per_mt": {
+    "target_name": "Freight Rate (USD/MT)",
+    "mae": 0.6656727405216383,
+    "rmse": 0.855336562055023,
+    "r2": -0.9401664289588048,
+    "directional_accuracy_pct": 22.404371584699454
+  }
+}
