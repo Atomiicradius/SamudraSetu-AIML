@@ -1,0 +1,83 @@
+{
+  "model": "lstm_v2",
+  "artifact": "backend/artifacts/lstm_v2_freight_model.pth",
+  "num_cols": [
+    "usd_inr_exchange_rate",
+    "brent_crude_usd_per_bbl",
+    "coal_price_usd_per_mt",
+    "freight_aus_to_paradip_capesize_usd_per_mt",
+    "freight_aus_to_paradip_panamax_usd_per_mt",
+    "freight_usa_to_vizag_capesize_usd_per_mt",
+    "freight_moz_to_dhamra_supramax_usd_per_mt"
+  ],
+  "dropped_sparse_columns": [
+    "freight_australia_paradip_supramax_usd_per_mt",
+    "freight_indonesia_visakhapatnam_panamax_usd_per_mt",
+    "freight_mozambique_dhamra_handysize_usd_per_mt"
+  ],
+  "target_col": "freight_aus_to_paradip_capesize_usd_per_mt",
+  "lookback_rows": 30,
+  "horizons_rows": [
+    7,
+    14,
+    30,
+    60
+  ],
+  "target_definition": "log(rate[t+h] / rate[t]) on raw USD/MT; rate = last input row",
+  "units_note": "master CSV is business-days only; 'days' are rows",
+  "fill_policy": "forward-fill only, leading NaN rows dropped",
+  "purge_rows": 60,
+  "split_fractions": {
+    "train": 0.7,
+    "val": 0.1,
+    "test": 0.20000000000000004
+  },
+  "scaler_fit_on": "train rows only",
+  "scaler_mean": [
+    63.805896900034824,
+    75.87859282479972,
+    81.39919191919192,
+    32.866147683733885,
+    26.214660397074194,
+    60.227816091954026,
+    18.165318704284225
+  ],
+  "scaler_scale": [
+    8.47387211938819,
+    26.97660603145472,
+    28.53838195165257,
+    9.508538632675249,
+    7.967201510617963,
+    12.509579351480667,
+    4.759562860375824
+  ],
+  "split_dates": {
+    "train": {
+      "first_row_date": "2010-12-17",
+      "last_row_date": "2021-12-17",
+      "n_windows": 2782
+    },
+    "val": {
+      "first_row_date": "2022-03-14",
+      "last_row_date": "2023-07-14",
+      "n_windows": 261
+    },
+    "test": {
+      "first_row_date": "2023-10-09",
+      "last_row_date": "2026-09-11",
+      "n_windows": 672
+    }
+  },
+  "seed": 42,
+  "best_epoch": 1,
+  "best_val_loss": 0.003079198068007827,
+  "optimizer": {
+    "name": "Adam",
+    "lr": 0.001,
+    "loss": "SmoothL1",
+    "batch": 64,
+    "max_epochs": 60,
+    "patience": 8,
+    "scheduler": null
+  }
+}
