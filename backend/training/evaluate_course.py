@@ -12,6 +12,7 @@ the last 20% of rows, after a 60-row purge gap). For each window the forecast
 origin is row t and the target is rate[t+h] in raw USD/MT.
 
 * persistence : rate[t]
+* persistence+drift : rate[t] + h * mean one-row change over the trailing 365 rows
 * holt        : statsmodels damped-trend ExponentialSmoothing fitted on the
                 trailing 365 rows up to and including t (no look-ahead)
 * lstm (old)  : backend/artifacts/lstm_freight_model.pth with its ORIGINAL
@@ -68,6 +69,17 @@ def holt_predictions(rate_series: np.ndarray, origin_positions: np.ndarray) -> n
             fit = ExponentialSmoothing(history, trend="add", damped_trend=True).fit(optimized=True)
             path = np.asarray(fit.forecast(v2.MAX_H))
         out[n] = [path[h - 1] for h in v2.HORIZONS]
+    return out
+
+
+def drift_predictions(rate_series: np.ndarray, origin_positions: np.ndarray) -> np.ndarray:
+    """(N, 4) 'persistence+drift': rate[t] + h * mean one-row change over the
+    trailing 365 rows ending at t (364 differences). Uses only rows <= t."""
+    out = np.zeros((len(origin_positions), len(v2.HORIZONS)))
+    for n, pos in enumerate(origin_positions):
+        window = rate_series[max(0, pos - 364): pos + 1]
+        slope = (window[-1] - window[0]) / max(len(window) - 1, 1)  # == mean of np.diff(window)
+        out[n] = [rate_series[pos] + h * slope for h in v2.HORIZONS]
     return out
 
 
@@ -172,6 +184,7 @@ def main() -> None:
           f"({str(test['end_dates'][0])[:10]} -> {str(test['end_dates'][-1])[:10]}); fitting Holt per window...")
     predictions = {
         "persistence": np.repeat(test["rate_t"][:, None], len(v2.HORIZONS), axis=1),
+        "persistence+drift": drift_predictions(rate_full, origin_pos),
         "holt": holt_predictions(rate_full, origin_pos),
         "lstm (old)": old_lstm_predictions(master, test["end_dates"]),
         "lstm_v2": v2_pred,
@@ -237,9 +250,16 @@ def main() -> None:
             ok = _beats(per_model[name], base); any_beats |= ok
             print(f"  {h:>2}d  {name:<11}: {'beats' if ok else 'does NOT beat'} persistence "
                   f"(MAE {per_model[name]['mae']:.3f} vs {base['mae']:.3f})")
+    if "timesfm" in results["horizons"]["30-Day"]:
+        print("\nTimesFM vs persistence+drift (needs lower MAE AND lower RMSE):")
+        for h in v2.HORIZONS:
+            per_model = results["horizons"][f"{h}-Day"]
+            t, d = per_model["timesfm"], per_model["persistence+drift"]
+            print(f"  {h:>2}d  timesfm {'beats' if _beats(t, d) else 'does NOT beat'} persistence+drift "
+                  f"(MAE {t['mae']:.3f} vs {d['mae']:.3f}, RMSE {t['rmse']:.3f} vs {d['rmse']:.3f})")
     if tfm is not None and stride > 1:
         for h in v2.HORIZONS:
-            sub = results["timesfm_subset"]["horizons"][f"{h}-Day"]
+            sub =results["timesfm_subset"]["horizons"][f"{h}-Day"]
             ok = _beats(sub["timesfm"], sub["persistence"]); any_beats |= ok
             print(f"  {h:>2}d  timesfm (subset, stride {stride}): {'beats' if ok else 'does NOT beat'} persistence "
                   f"(MAE {sub['timesfm']['mae']:.3f} vs {sub['persistence']['mae']:.3f})")
