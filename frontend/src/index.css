@@ -2801,3 +2801,139 @@ a {
   padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
 }
+
+/* ── Model comparison (read-only) ───────────────────────────────── */
+.cmp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cmp-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cmp-lede {
+  margin-top: 6px;
+  max-width: 720px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.cmp-horizons {
+  display: inline-flex;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+.cmp-horizon-btn {
+  padding: 7px 16px;
+  border: 0;
+  border-right: 1px solid var(--border-subtle);
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.cmp-horizon-btn:last-child {
+  border-right: 0;
+}
+.cmp-horizon-btn:hover {
+  background: var(--bg-subtle);
+}
+.cmp-horizon-btn:focus-visible {
+  outline: 2px solid var(--teal-primary);
+  outline-offset: -2px;
+}
+.cmp-horizon-active,
+.cmp-horizon-active:hover {
+  background: var(--navy-deep);
+  color: #ffffff;
+}
+.cmp-notice {
+  padding: 10px 14px;
+  border: 1px solid var(--state-warn);
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--state-warn-bg);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.cmp-message {
+  padding: 14px 16px;
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.cmp-chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px 8px;
+}
+.cmp-chart-title {
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.cmp-table-wrap {
+  overflow-x: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.cmp-table th,
+.cmp-table td {
+  padding: 9px 12px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cmp-table thead th {
+  background: var(--bg-subtle);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.cmp-table th:first-child,
+.cmp-table tbody th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cmp-table tbody tr:last-child th,
+.cmp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.cmp-row-baseline th,
+.cmp-row-baseline td {
+  background: var(--teal-light);
+}
+.cmp-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+.cmp-better {
+  color: var(--state-pass);
+  font-weight: 700;
+}
+.cmp-footnote {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}

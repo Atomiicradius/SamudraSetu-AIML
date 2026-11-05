@@ -11,6 +11,7 @@ import PortRiskSection from './components/PortRiskSection';
 import FeasibilitySection from './components/FeasibilitySection';
 import DecisionSection from './components/DecisionSection';
 import MethodologySection from './components/MethodologySection';
+import ModelComparison from './components/ModelComparison';
 import { getPipelineConfig, runPipeline } from './api';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -396,6 +397,8 @@ export default function App() {
                 <ForecastSection forecast={result.forecast} />
               </div>
             </div>
+
+            <ModelComparison />
 
             {/* 4. Port Operational Risk & Congestion */}
             <div className="workspace-section-boundary">
