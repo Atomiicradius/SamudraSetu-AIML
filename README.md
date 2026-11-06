@@ -66,6 +66,15 @@ For the optional Streamlit UI:
 streamlit run streamlit_app.py
 ```
 
+## Model evaluation
+
+`backend/training/train_lstm_v2.py` retrains the LSTM without the leakage
+described below, and `backend/training/evaluate_course.py` scores persistence,
+persistence+drift, Holt, the original LSTM, LSTM v2 and zero-shot TimesFM on
+the same test windows. Results are in `data/model/course_eval_results.json` and
+are shown in the app's "Model comparison" section. The freight series is
+simulated, so a model is only useful if it beats persistence.
+
 ## Verify
 
 ```powershell
@@ -96,4 +105,4 @@ or `git shortlog -sne --all` to inspect the retained authorship.
 
 The original local clones were moved, not destroyed, to the recoverable sibling
 directory `C:\Users\Lenovo\Desktop\sih\SamudraSeva-source-repositories` after
-their histories were imported.
+their histories were imported...
